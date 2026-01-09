@@ -1,475 +1,555 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoFleetic - Revolutionary Geospatial Fleet Intelligence</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #ffffff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #ffffff;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: twinkle 3s infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .container {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .hero {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .powered-by {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.2s forwards;
-        }
-
-        .powered-by a {
-            color: #00d4ff;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .powered-by a:hover {
-            color: #ffffff;
-        }
-
-        .logo {
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.4s forwards;
-        }
-
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.9;
-            font-weight: 300;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.6s forwards;
-        }
-
-        .description {
-            font-size: 1.25rem;
-            margin-bottom: 3rem;
-            max-width: 800px;
-            line-height: 1.6;
-            margin: 0 auto 2em;
-            opacity: 0.8;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 0.8s forwards;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 1s forwards;
-            max-width: 800px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #00d4ff, #7c3aed, #ec4899);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.1);
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #00d4ff;
-        }
-
-        .feature-text {
-            opacity: 0.8;
-            line-height: 1.6;
-        }
-
-        .cta-section {
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 1.2s forwards;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1.2rem 3rem;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .tech-badges {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 1.4s forwards;
-        }
-
-        .tech-badge {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .tech-badge:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: #00d4ff;
-            color: #00d4ff;
-        }
-
-        .floating-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .floating-cube {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            opacity: 0.6;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .grid-pattern {
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.8) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(124, 58, 237, 0.7) 2px, transparent 2px),
-                linear-gradient(45deg, rgba(236, 72, 153, 0.6) 1px, transparent 1px),
-                linear-gradient(-45deg, rgba(0, 212, 255, 0.5) 1px, transparent 1px);
-            background-size: 12px 12px, 12px 12px, 8px 8px, 8px 8px;
-            backdrop-filter: blur(1px);
-            border: 2px solid;
-            border-image: linear-gradient(45deg, #00d4ff, #7c3aed, #ec4899) 1;
-            border-radius: 8px;
-        }
-
-        .floating-cube:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-cube:nth-child(2) {
-            top: 60%;
-            right: 10%;
-            animation-delay: 2s;
-        }
-
-        .floating-cube:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GeoFleetic - Beyond Intelligence</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
-        @media (max-width: 768px) {
+            body {
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+                background: #0a0a0f;
+                color: #ffffff;
+                overflow-x: hidden;
+                cursor: default;
+            }
+
+            /* Canvas background */
+            #canvas-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+            }
+
+            /* Main content overlay */
+            .content {
+                position: relative;
+                z-index: 10;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 40px 20px;
+                text-align: center;
+            }
+
+            /* Logo */
             .logo {
-                font-size: 3rem;
+                font-size: 18px;
+                font-weight: 300;
+                letter-spacing: 8px;
+                text-transform: uppercase;
+                opacity: 0;
+                animation: fadeInDown 1.2s ease forwards;
+                animation-delay: 0.3s;
+                margin-bottom: 60px;
+                color: #8b9dc3;
             }
+
+            /* Main heading */
+            h1 {
+                font-size: clamp(48px, 8vw, 120px);
+                font-weight: 800;
+                margin-bottom: 30px;
+                opacity: 0;
+                animation: fadeInUp 1.2s ease forwards;
+                animation-delay: 0.6s;
+                background: linear-gradient(
+                    135deg,
+                    #667eea 0%,
+                    #764ba2 50%,
+                    #f093fb 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1.1;
+            }
+
+            /* Acronym breakdown */
+            .acronym {
+                font-size: clamp(16px, 2vw, 24px);
+                font-weight: 300;
+                letter-spacing: 2px;
+                line-height: 1.8;
+                margin-bottom: 60px;
+                opacity: 0;
+                animation: fadeInUp 1.2s ease forwards;
+                animation-delay: 0.9s;
+                max-width: 900px;
+            }
+
+            .acronym span {
+                color: #667eea;
+                font-weight: 600;
+            }
+
+            /* CTA Button */
+            .cta-button {
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                padding: 20px 50px;
+                font-size: 18px;
+                font-weight: 600;
+                text-decoration: none;
+                background: rgba(102, 126, 234, 0.1);
+                color: #ffffff;
+                border: 2px solid #667eea;
+                border-radius: 50px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+                animation: fadeInUp 1.2s ease forwards;
+                animation-delay: 1.2s;
+                backdrop-filter: blur(10px);
+            }
+
+            .cta-button::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(102, 126, 234, 0.4),
+                    transparent
+                );
+                transition: left 0.5s ease;
+            }
+
+            .cta-button:hover::before {
+                left: 100%;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+                border-color: #764ba2;
+                background: rgba(102, 126, 234, 0.2);
+            }
+
+            .cta-button svg {
+                width: 20px;
+                height: 20px;
+                transition: transform 0.3s ease;
+            }
+
+            .cta-button:hover svg {
+                transform: translateX(5px);
+            }
+
+            /* Scroll indicator */
+            .scroll-indicator {
+                position: absolute;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                opacity: 0;
+                animation:
+                    fadeIn 1.2s ease forwards,
+                    bounce 2s ease-in-out infinite;
+                animation-delay: 1.5s, 1.5s;
+            }
+
+            .scroll-indicator::before {
+                content: "";
+                display: block;
+                width: 2px;
+                height: 40px;
+                background: linear-gradient(to bottom, transparent, #667eea);
+                margin: 0 auto 10px;
+            }
+
+            /* Tagline at bottom */
             .tagline {
-                font-size: 1.2rem;
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 12px;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #8b9dc3;
+                opacity: 0.6;
+                z-index: 10;
             }
-            .description {
-                font-size: 1.1rem;
-            }
-            .features {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            .floating-cube {
-                width: 80px;
-                height: 80px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="stars" id="stars"></div>
-    
-    <div class="floating-elements">
-        <div class="floating-cube">
-            <div class="grid-pattern"></div>
-        </div>
-        <div class="floating-cube">
-            <div class="grid-pattern"></div>
-        </div>
-        <div class="floating-cube">
-            <div class="grid-pattern"></div>
-        </div>
-    </div>
 
-    <div class="container">
-        <div class="hero">
-            <div class="powered-by">
-                Powered by <a href="https://traaviis.com" target="_blank">TRAAVIIS</a>
-            </div>
-            
-            <h1 class="logo">GeoFleetic</h1>
-            
-            <p class="tagline">The Future of Geospatial Fleet Intelligence</p>
-            
-            <p class="description">
-                Revolutionary AI-powered platform that transforms geospatial intelligence into seamless fleet management and dispatching. 
-                Built on cutting-edge spatial reasoning infrastructure for the distributed ownership based Web3 era of mobility.
-            </p>
-            
-            <div class="features">
-                <div class="feature-card">
-                    <div class="feature-icon">🗺️</div>
-                    <h3 class="feature-title">Spatial Intelligence Core</h3>
-                    <p class="feature-text">
-                        Advanced PostGIS-powered spatial reasoning with real-time geofencing and proximity analytics for intelligent fleet positioning.
-                    </p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🛰️</div>
-                    <h3 class="feature-title">Predictive Route Mastery</h3>
-                    <p class="feature-text">
-                        AI-driven route optimization leveraging geospatial foundation models, traffic prediction, and dynamic load balancing.
-                    </p>
-                </div>
-                
-                <a href="https://ticktickclock.com" target="_blank" style="text-decoration: none; color: inherit;">
-                    <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
-                        <h3 class="feature-title">Real-time Fleet Orchestration</h3>
-                        <p class="feature-text">
-                            Distributed vehicle coordination with precision dispatching, automated rebalancing, and intelligent asset allocation.
-                        </p>
-                    </div>
-                </a>
-
-                <a href="https://github.com/c-u-l8er/stellarmorphism" target="_blank" style="text-decoration: none; color: inherit;">
-                    <div class="feature-card">
-                        <div class="feature-icon">🗄️</div>
-                        <h3 class="feature-title">Stellarmorphism</h3>
-                        <p class="feature-text">
-                            A stellar-themed algebraic data type DSL for Elixir that brings type-safe, elegant pattern matching and construction to GeoFleetic.
-                        </p>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="cta-section">
-                <a href="#" class="cta-button">Launch Fleet Intelligence</a>
-                
-                <div class="tech-badges">
-                    <span class="tech-badge">Geospatial AI</span>
-                    <span class="tech-badge">Fleet Optimization</span>
-                    <span class="tech-badge">Smart Dispatch</span>
-                    <span class="tech-badge">Web3 Ready</span>
-                    <span class="tech-badge">Real-time Analytics</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Generate random stars
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const numStars = 100;
-            
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // Parallax effect for floating elements
-        document.addEventListener('mousemove', (e) => {
-            const cubes = document.querySelectorAll('.floating-cube');
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
-            
-            cubes.forEach((cube, index) => {
-                const speed = (index + 1) * 0.5;
-                cube.style.transform = `translate(${x * speed * 10}px, ${y * speed * 10}px) rotate(${x * speed * 45}deg)`;
-            });
-        });
-
-        // Smooth scroll animation for CTA
-        document.querySelector('.cta-button').addEventListener('click', (e) => {
-            e.preventDefault();
-            // Add your fleet intelligence access logic here
-            alert('GeoFleetic Fleet Intelligence coming soon! 🗺️');
-        });
-
-        // Initialize stars
-        createStars();
-        
-        // Add scroll-triggered animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.animationPlayState = 'running';
+            /* Animations */
+            @keyframes fadeInDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px);
                 }
-            });
-        }, observerOptions);
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
 
-        // Observe all animated elements
-        document.querySelectorAll('.hero > *').forEach(el => {
-            observer.observe(el);
-        });
-    </script>
-</body>
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 0.6;
+                }
+            }
+
+            @keyframes bounce {
+                0%,
+                100% {
+                    transform: translateX(-50%) translateY(0);
+                }
+                50% {
+                    transform: translateX(-50%) translateY(10px);
+                }
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .logo {
+                    font-size: 14px;
+                    letter-spacing: 6px;
+                    margin-bottom: 40px;
+                }
+
+                .acronym {
+                    font-size: 14px;
+                    letter-spacing: 1px;
+                    margin-bottom: 40px;
+                    padding: 0 10px;
+                }
+
+                .cta-button {
+                    padding: 16px 40px;
+                    font-size: 16px;
+                }
+
+                .tagline {
+                    font-size: 10px;
+                    letter-spacing: 2px;
+                }
+            }
+
+            /* Loading spinner */
+            .loading {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 100;
+                pointer-events: none;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 3px solid rgba(102, 126, 234, 0.2);
+                border-top-color: #667eea;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Loading spinner -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Three.js canvas -->
+        <div id="canvas-container"></div>
+
+        <!-- Content overlay -->
+        <div class="content">
+            <div class="logo">GeoFleetic</div>
+
+            <h1>GeoFleetic</h1>
+
+            <div class="acronym">
+                <span>G</span>raph <span>E</span>nabled <span>O</span>perations
+                for<br />
+                <span>Fleet</span>s that <span>I</span>ntelligently
+                <span>C</span>ollaborate
+            </div>
+
+            <a
+                href="https://fleetprompt.com/marketplace?q=geofleetic"
+                class="cta-button"
+            >
+                <span>Discover on FleetPrompt</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                </svg>
+            </a>
+
+            <div class="scroll-indicator"></div>
+        </div>
+
+        <div class="tagline">Beyond Intelligence</div>
+
+        <!-- Three.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+        <script>
+            // Wait for DOM and Three.js to load
+            window.addEventListener("load", () => {
+                initScene();
+                document.getElementById("loading").style.display = "none";
+            });
+
+            function initScene() {
+                const container = document.getElementById("canvas-container");
+
+                // Scene setup
+                const scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x0a0a0f, 10, 50);
+
+                // Camera
+                const camera = new THREE.PerspectiveCamera(
+                    75,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000,
+                );
+                camera.position.z = 12;
+
+                // Renderer
+                const renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true,
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setClearColor(0x0a0a0f, 1);
+                container.appendChild(renderer.domElement);
+
+                // Create brain-like graph network
+                const graphGroup = new THREE.Group();
+
+                // Node and connection parameters
+                const nodeCount = 300;
+                const nodes = [];
+                const connections = [];
+
+                // Create nodes in a brain-like shape
+                const nodeGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+                const nodeMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x667eea,
+                    transparent: true,
+                    opacity: 0.8,
+                });
+
+                // Generate nodes in ellipsoid (brain-like) formation
+                for (let i = 0; i < nodeCount; i++) {
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(Math.random() * 2 - 1);
+
+                    // Ellipsoid shape (brain-like) - LARGER
+                    const x = 7 * Math.sin(phi) * Math.cos(theta);
+                    const y = 5.5 * Math.sin(phi) * Math.sin(theta);
+                    const z = 6 * Math.cos(phi);
+
+                    const node = new THREE.Mesh(
+                        nodeGeometry,
+                        nodeMaterial.clone(),
+                    );
+                    node.position.set(x, y, z);
+
+                    // Random pulsing animation offset
+                    node.userData.pulseOffset = Math.random() * Math.PI * 2;
+                    node.userData.pulseSpeed = 0.5 + Math.random() * 0.5;
+
+                    nodes.push(node);
+                    graphGroup.add(node);
+                }
+
+                // Create connections between nearby nodes
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x764ba2,
+                    transparent: true,
+                    opacity: 0.15,
+                });
+
+                for (let i = 0; i < nodes.length; i++) {
+                    // Connect to 3-5 nearest neighbors
+                    const connectionCount = 3 + Math.floor(Math.random() * 3);
+                    const distances = nodes.map((node, idx) => ({
+                        idx,
+                        dist: nodes[i].position.distanceTo(node.position),
+                    }));
+
+                    distances.sort((a, b) => a.dist - b.dist);
+
+                    for (
+                        let j = 1;
+                        j < Math.min(connectionCount, distances.length);
+                        j++
+                    ) {
+                        const targetNode = nodes[distances[j].idx];
+
+                        const points = [nodes[i].position, targetNode.position];
+
+                        const geometry =
+                            new THREE.BufferGeometry().setFromPoints(points);
+                        const line = new THREE.Line(
+                            geometry,
+                            lineMaterial.clone(),
+                        );
+
+                        line.userData.pulseOffset = Math.random() * Math.PI * 2;
+
+                        connections.push(line);
+                        graphGroup.add(line);
+                    }
+                }
+
+                scene.add(graphGroup);
+
+                // Ambient particles
+                const particleCount = 200;
+                const particleGeometry = new THREE.BufferGeometry();
+                const particlePositions = new Float32Array(particleCount * 3);
+
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    particlePositions[i] = (Math.random() - 0.5) * 40;
+                    particlePositions[i + 1] = (Math.random() - 0.5) * 40;
+                    particlePositions[i + 2] = (Math.random() - 0.5) * 40;
+                }
+
+                particleGeometry.setAttribute(
+                    "position",
+                    new THREE.BufferAttribute(particlePositions, 3),
+                );
+
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0x667eea,
+                    size: 0.05,
+                    transparent: true,
+                    opacity: 0.3,
+                });
+
+                const particles = new THREE.Points(
+                    particleGeometry,
+                    particleMaterial,
+                );
+                scene.add(particles);
+
+                // Mouse interaction
+                let mouseX = 0;
+                let mouseY = 0;
+                let targetRotationX = 0;
+                let targetRotationY = 0;
+
+                document.addEventListener("mousemove", (event) => {
+                    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                });
+
+                // Animation loop
+                let time = 0;
+                function animate() {
+                    requestAnimationFrame(animate);
+
+                    time += 0.01;
+
+                    // Rotate brain graph slowly (base rotation)
+                    graphGroup.rotation.y += 0.002;
+
+                    // Mouse-based rotation (more pronounced, including vertical)
+                    targetRotationX = mouseY * 0.6; // Up/down mouse movement
+                    targetRotationY = mouseX * 0.5; // Left/right mouse movement
+
+                    // Smooth interpolation
+                    graphGroup.rotation.x +=
+                        (targetRotationX - graphGroup.rotation.x) * 0.08;
+                    graphGroup.rotation.y +=
+                        (targetRotationY - graphGroup.rotation.y) * 0.08;
+
+                    // Animate node pulsing
+                    nodes.forEach((node, idx) => {
+                        const pulse = Math.sin(
+                            time * node.userData.pulseSpeed +
+                                node.userData.pulseOffset,
+                        );
+                        node.material.opacity = 0.6 + pulse * 0.2;
+                        node.scale.setScalar(1 + pulse * 0.2);
+
+                        // Occasional bright flash
+                        if (Math.random() > 0.998) {
+                            node.material.opacity = 1;
+                            node.material.color.setHex(0xf093fb);
+                            setTimeout(() => {
+                                node.material.color.setHex(0x667eea);
+                            }, 200);
+                        }
+                    });
+
+                    // Animate connection pulsing
+                    connections.forEach((line) => {
+                        const pulse = Math.sin(
+                            time * 0.8 + line.userData.pulseOffset,
+                        );
+                        line.material.opacity = 0.1 + pulse * 0.08;
+                    });
+
+                    // Rotate particles
+                    particles.rotation.y += 0.0005;
+                    particles.rotation.x += 0.0003;
+
+                    renderer.render(scene, camera);
+                }
+
+                animate();
+
+                // Handle window resize
+                window.addEventListener("resize", () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        </script>
+    </body>
 </html>
