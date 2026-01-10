@@ -29,8 +29,8 @@
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100%;
-                height: 100%;
+                width: 100vw;
+                height: 100vh;
                 z-index: 0;
             }
 
@@ -344,16 +344,16 @@
 
                 // Scene setup
                 const scene = new THREE.Scene();
-                scene.fog = new THREE.Fog(0x0a0a0f, 10, 50);
+                scene.fog = new THREE.Fog(0x0a0a0f, 10, 100);
 
                 // Camera
                 const camera = new THREE.PerspectiveCamera(
-                    75,
+                    60,
                     window.innerWidth / window.innerHeight,
                     0.1,
                     1000,
                 );
-                camera.position.z = 12;
+                camera.position.z = 18;
 
                 // Renderer
                 const renderer = new THREE.WebGLRenderer({
@@ -387,9 +387,9 @@
                     const phi = Math.acos(Math.random() * 2 - 1);
 
                     // Ellipsoid shape (brain-like) - LARGER
-                    const x = 7 * Math.sin(phi) * Math.cos(theta);
-                    const y = 5.5 * Math.sin(phi) * Math.sin(theta);
-                    const z = 6 * Math.cos(phi);
+                    const x = 12 * Math.sin(phi) * Math.cos(theta);
+                    const y = 9 * Math.sin(phi) * Math.sin(theta);
+                    const z = 10 * Math.cos(phi);
 
                     const node = new THREE.Mesh(
                         nodeGeometry,
@@ -453,9 +453,9 @@
                 const particlePositions = new Float32Array(particleCount * 3);
 
                 for (let i = 0; i < particleCount * 3; i += 3) {
-                    particlePositions[i] = (Math.random() - 0.5) * 40;
-                    particlePositions[i + 1] = (Math.random() - 0.5) * 40;
-                    particlePositions[i + 2] = (Math.random() - 0.5) * 40;
+                    particlePositions[i] = (Math.random() - 0.5) * 60;
+                    particlePositions[i + 1] = (Math.random() - 0.5) * 60;
+                    particlePositions[i + 2] = (Math.random() - 0.5) * 60;
                 }
 
                 particleGeometry.setAttribute(
