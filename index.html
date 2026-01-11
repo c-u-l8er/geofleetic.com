@@ -98,6 +98,21 @@
                 font-weight: 600;
             }
 
+            .copyright, .powered-by {
+                color: #888;
+                margin-bottom: 60px;
+                opacity: 0;
+                animation: fadeInUp 1.2s ease forwards;
+                animation-delay: 0.9s;
+            }
+
+            .powered-by a {
+                color: #aaa;
+            }
+            .powered-by a:hover {
+                color: #fff;
+            }
+
             /* CTA Button */
             .cta-button {
                 display: inline-flex;
@@ -301,7 +316,6 @@
             <div class="logo">GeoFleetic</div>
 
             <h1>GeoFleetic</h1>
-
             <div class="acronym">
                 <span>G</span>raph <span>E</span>nabled <span>O</span>perations
                 for<br />
@@ -323,6 +337,9 @@
                     />
                 </svg>
             </a>
+            <br />
+            <br />
+            <span class="copyright">© <span id="year"></span> geofleetic.com ... <span class="powered-by">Powered by <a href="https://ampersandboxdesign.com" target="_blank">[&]</a></span></span>
 
             <div class="scroll-indicator"></div>
         </div>
@@ -333,6 +350,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
         <script>
+            document.getElementById("year").textContent = new Date().getFullYear();
+
+
             // Wait for DOM and Three.js to load
             window.addEventListener("load", () => {
                 initScene();
