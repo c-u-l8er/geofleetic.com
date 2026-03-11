@@ -3,581 +3,1473 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>GeoFleetic - Beyond Intelligence</title>
+        <title>GeoFleetic — Spatial Intelligence | [&] Portfolio</title>
+        <meta
+            name="description"
+            content="Geo-distributed fleet intelligence collaboration. The spatial intelligence layer of the [&] Ampersand Box Design ecosystem."
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Urbanist:wght@300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
         <style>
+            :root {
+                --bg: #07070e;
+                --surface: #0c0d16;
+                --surface-2: #11121d;
+                --border: rgba(255, 255, 255, 0.05);
+                --text: #e4e2ee;
+                --dim: #908da8;
+                --muted: #565374;
+                --indigo: #667eea;
+                --purple: #764ba2;
+                --pink: #f093fb;
+                --indigo-glow: rgba(102, 126, 234, 0.15);
+            }
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
-
+            html {
+                scroll-behavior: smooth;
+            }
             body {
-                font-family:
-                    "Inter",
-                    -apple-system,
-                    BlinkMacSystemFont,
-                    "Segoe UI",
-                    sans-serif;
-                background: #0a0a0f;
-                color: #ffffff;
+                font-family: "DM Mono", monospace;
+                background: var(--bg);
+                color: var(--text);
                 overflow-x: hidden;
-                cursor: default;
+                line-height: 1.6;
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+                pointer-events: none;
+                z-index: 9999;
+            }
+            canvas#globe {
+                position: fixed;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+            }
+            .page {
+                position: relative;
+                z-index: 1;
             }
 
-            /* Canvas background */
-            #canvas-container {
+            /* Loader */
+            .loader {
+                position: fixed;
+                inset: 0;
+                background: var(--bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 5000;
+                animation: loaderOut 0.8s ease 1.8s forwards;
+            }
+            @keyframes loaderOut {
+                to {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+            }
+            .loader-inner {
+                text-align: center;
+            }
+            .loader-text {
+                font-family: "Urbanist", sans-serif;
+                font-size: 1rem;
+                font-weight: 800;
+                letter-spacing: 0.4em;
+                color: var(--indigo);
+                animation: lp 0.8s ease-in-out infinite;
+            }
+            .loader-bar {
+                width: 100px;
+                height: 2px;
+                background: var(--muted);
+                margin: 1rem auto 0;
+                overflow: hidden;
+                border-radius: 1px;
+            }
+            .loader-bar::after {
+                content: "";
+                display: block;
+                width: 40%;
+                height: 100%;
+                background: linear-gradient(90deg, var(--indigo), var(--pink));
+                animation: ls 1s ease-in-out infinite;
+            }
+            @keyframes lp {
+                0%,
+                100% {
+                    opacity: 0.3;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }
+            @keyframes ls {
+                0% {
+                    transform: translateX(-100%);
+                }
+                100% {
+                    transform: translateX(350%);
+                }
+            }
+
+            /* Header */
+            header {
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100vw;
-                height: 100vh;
-                z-index: 0;
+                right: 0;
+                z-index: 200;
+                padding: 1.15rem 2.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: rgba(7, 7, 14, 0.6);
+                backdrop-filter: blur(24px);
+                border-bottom: 1px solid var(--border);
+            }
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 0.65rem;
+                text-decoration: none;
+                color: var(--text);
+            }
+            .logo-globe {
+                width: 26px;
+                height: 26px;
+                border: 1.5px solid var(--indigo);
+                border-radius: 50%;
+                position: relative;
+                overflow: hidden;
+            }
+            .logo-globe::before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: 1px solid rgba(102, 126, 234, 0.3);
+                border-radius: 50%;
+                top: 0;
+                left: 25%;
+                transform: scaleX(0.5);
+            }
+            .logo-globe::after {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 1px;
+                background: rgba(102, 126, 234, 0.4);
+                top: 50%;
+                left: 0;
+            }
+            .logo-name {
+                font-family: "Urbanist", sans-serif;
+                font-size: 0.95rem;
+                font-weight: 800;
+                letter-spacing: 0.02em;
+            }
+            .hd-nav {
+                display: flex;
+                align-items: center;
+                gap: 1.75rem;
+            }
+            .hd-nav a {
+                font-size: 0.72rem;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--dim);
+                text-decoration: none;
+                transition: color 0.25s;
+            }
+            .hd-nav a:hover {
+                color: var(--indigo);
+            }
+            .hd-amp {
+                padding: 0.4rem 0.85rem;
+                border: 1px solid var(--border);
+                background: rgba(255, 255, 255, 0.02);
+                display: flex;
+                align-items: center;
+                gap: 0.35rem;
+                transition: all 0.25s !important;
+            }
+            .hd-amp:hover {
+                border-color: var(--indigo) !important;
+                color: var(--indigo) !important;
+            }
+            .hd-amp .s {
+                color: var(--indigo);
+                font-weight: 700;
+                font-size: 0.92rem;
             }
 
-            /* Main content overlay */
-            .content {
-                position: relative;
-                z-index: 10;
+            /* Hero */
+            .hero {
                 min-height: 100vh;
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
                 align-items: center;
-                padding: 40px 20px;
+                justify-content: center;
+                position: relative;
+            }
+            .hero-c {
                 text-align: center;
+                padding: 2rem;
+                max-width: 860px;
+                width: 100%;
             }
 
-            /* Logo */
-            .logo {
-                font-size: 18px;
-                font-weight: 300;
-                letter-spacing: 8px;
+            .hero-eyebrow {
+                font-size: 0.6rem;
+                font-weight: 500;
+                letter-spacing: 0.35em;
                 text-transform: uppercase;
+                color: var(--dim);
+                margin-bottom: 2rem;
                 opacity: 0;
-                animation: fadeInDown 1.2s ease forwards;
-                animation-delay: 0.3s;
-                margin-bottom: 60px;
-                color: #8b9dc3;
+                animation: fadeUp 0.8s ease 2s forwards;
             }
 
-            /* Main heading */
-            h1 {
-                font-size: clamp(48px, 8vw, 120px);
-                font-weight: 800;
-                margin-bottom: 30px;
+            .hero-title {
+                font-family: "Urbanist", sans-serif;
+                font-weight: 900;
+                font-size: clamp(3.5rem, 12vw, 11rem);
+                line-height: 0.9;
+                letter-spacing: -0.05em;
+                margin-bottom: 1rem;
                 opacity: 0;
-                animation: fadeInUp 1.2s ease forwards;
-                animation-delay: 0.6s;
+                animation: titleIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) 2.1s
+                    forwards;
+            }
+            .hero-title .w {
+                display: block;
+            }
+            .hero-title .w1 {
+                color: var(--text);
+            }
+            .hero-title .w2 {
                 background: linear-gradient(
                     135deg,
-                    #667eea 0%,
-                    #764ba2 50%,
-                    #f093fb 100%
+                    var(--indigo),
+                    var(--purple),
+                    var(--pink)
                 );
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                line-height: 1.1;
+            }
+            @keyframes titleIn {
+                0% {
+                    opacity: 0;
+                    transform: scale(1.08);
+                    filter: blur(10px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                    filter: blur(0);
+                }
             }
 
-            /* Acronym breakdown */
-            .acronym {
-                font-size: clamp(16px, 2vw, 24px);
+            .hero-acro {
+                font-size: 0.88rem;
+                color: var(--dim);
+                letter-spacing: 0.06em;
+                margin-bottom: 2.5rem;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2.5s forwards;
+            }
+            .hero-acro strong {
+                color: var(--indigo);
+                font-weight: 500;
+            }
+
+            .hero-sub {
+                font-family: "Instrument Serif", serif;
+                font-size: clamp(1.1rem, 2vw, 1.5rem);
+                font-style: italic;
+                font-weight: 400;
+                color: var(--dim);
+                line-height: 1.6;
+                max-width: 500px;
+                margin: 0 auto 2rem;
+                opacity: 0;
+                animation: fadeUp 0.8s ease 2.7s forwards;
+            }
+            .hero-sub strong {
+                font-style: normal;
+                color: var(--text);
+                font-weight: 400;
+            }
+
+            .hero-desc {
+                font-size: 0.88rem;
+                color: var(--dim);
                 font-weight: 300;
-                letter-spacing: 2px;
-                line-height: 1.8;
-                margin-bottom: 60px;
+                line-height: 2;
+                max-width: 440px;
+                margin: 0 auto 2.5rem;
                 opacity: 0;
-                animation: fadeInUp 1.2s ease forwards;
-                animation-delay: 0.9s;
-                max-width: 900px;
+                animation: fadeUp 0.8s ease 2.9s forwards;
             }
 
-            .acronym span {
-                color: #667eea;
-                font-weight: 600;
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
-            .copyright,
-            .powered-by {
-                color: #888;
-                margin-bottom: 60px;
+            .hero-btns {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                flex-wrap: wrap;
                 opacity: 0;
-                animation: fadeInUp 1.2s ease forwards;
-                animation-delay: 0.9s;
+                animation: fadeUp 0.8s ease 3.1s forwards;
             }
-
-            .powered-by a {
-                color: #aaa;
-            }
-            .powered-by a:hover {
-                color: #fff;
-            }
-
-            /* CTA Button */
-            .cta-button {
-                display: inline-flex;
-                align-items: center;
-                gap: 12px;
-                padding: 20px 50px;
-                font-size: 18px;
-                font-weight: 600;
+            .btn {
+                font-family: "DM Mono", monospace;
+                font-size: 0.78rem;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                padding: 0.9rem 2.2rem;
                 text-decoration: none;
-                background: rgba(102, 126, 234, 0.1);
-                color: #ffffff;
-                border: 2px solid #667eea;
-                border-radius: 50px;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                 position: relative;
                 overflow: hidden;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                opacity: 0;
-                animation: fadeInUp 1.2s ease forwards;
-                animation-delay: 1.2s;
-                backdrop-filter: blur(10px);
+            }
+            .btn-grad {
+                background: linear-gradient(
+                    135deg,
+                    var(--indigo),
+                    var(--purple)
+                );
+                color: #fff;
+            }
+            .btn-grad:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+            }
+            .btn-ghost {
+                background: transparent;
+                color: var(--dim);
+                border: 1px solid var(--muted);
+            }
+            .btn-ghost:hover {
+                border-color: var(--indigo);
+                color: var(--indigo);
             }
 
-            .cta-button::before {
+            /* Sections */
+            .sects {
+                position: relative;
+                z-index: 2;
+                background: var(--bg);
+            }
+            .sc {
+                padding: 7rem 0;
+                border-top: 1px solid var(--border);
+            }
+            .sc-in {
+                max-width: 960px;
+                margin: 0 auto;
+                padding: 0 2.5rem;
+            }
+            .sc-hd {
+                margin-bottom: 4.5rem;
+            }
+            .sc-hd.ctr {
+                text-align: center;
+            }
+            .ovl {
+                font-size: 0.68rem;
+                font-weight: 500;
+                letter-spacing: 0.35em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 1.25rem;
+            }
+            .sc-hd h2 {
+                font-family: "Urbanist", sans-serif;
+                font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+                font-weight: 800;
+                letter-spacing: -0.03em;
+                margin-bottom: 0.8rem;
+                line-height: 1.15;
+            }
+            .sc-hd h2 em {
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-weight: 400;
+                color: var(--indigo);
+            }
+            .sc-hd .sub {
+                font-size: 0.92rem;
+                color: var(--dim);
+                font-weight: 300;
+                line-height: 1.9;
+                max-width: 540px;
+            }
+            .sc-hd.ctr .sub {
+                margin: 0 auto;
+            }
+
+            /* Features */
+            .feat-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1px;
+                background: var(--border);
+                border: 1px solid var(--border);
+            }
+            .feat {
+                background: var(--bg);
+                padding: 2.5rem 2rem;
+                transition: background 0.3s;
+                position: relative;
+            }
+            .feat:hover {
+                background: var(--surface);
+            }
+            .feat::after {
                 content: "";
                 position: absolute;
                 top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(102, 126, 234, 0.4),
-                    transparent
-                );
-                transition: left 0.5s ease;
+                left: 0;
+                right: 0;
+                height: 2px;
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .feat:hover::after {
+                transform: scaleX(1);
+            }
+            .feat:nth-child(1)::after {
+                background: var(--indigo);
+            }
+            .feat:nth-child(2)::after {
+                background: var(--purple);
+            }
+            .feat:nth-child(3)::after {
+                background: var(--pink);
+            }
+            .feat-num {
+                font-family: "Urbanist", sans-serif;
+                font-size: 2rem;
+                font-weight: 900;
+                color: rgba(102, 126, 234, 0.1);
+                margin-bottom: 1.25rem;
+                transition: color 0.3s;
+            }
+            .feat:hover .feat-num {
+                color: rgba(102, 126, 234, 0.25);
+            }
+            .feat h3 {
+                font-family: "Urbanist", sans-serif;
+                font-size: 0.95rem;
+                font-weight: 800;
+                margin-bottom: 0.8rem;
+                letter-spacing: 0.02em;
+            }
+            .feat:nth-child(1) h3 {
+                color: var(--indigo);
+            }
+            .feat:nth-child(2) h3 {
+                color: var(--purple);
+            }
+            .feat:nth-child(3) h3 {
+                color: var(--pink);
+            }
+            .feat p {
+                font-size: 0.88rem;
+                color: var(--dim);
+                font-weight: 300;
+                line-height: 1.85;
+            }
+            .feat-tag {
+                display: inline-block;
+                margin-top: 1.2rem;
+                font-size: 0.72rem;
+                letter-spacing: 0.06em;
+                padding: 0.25rem 0.6rem;
+                border: 1px solid var(--border);
+                color: var(--muted);
             }
 
-            .cta-button:hover::before {
-                left: 100%;
+            /* Methods / Use cases grid */
+            .uc-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1px;
+                background: var(--border);
+                border: 1px solid var(--border);
             }
-
-            .cta-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
-                border-color: #764ba2;
-                background: rgba(102, 126, 234, 0.2);
+            .uc {
+                background: var(--bg);
+                padding: 2.5rem 2rem;
+                transition: background 0.3s;
             }
-
-            .cta-button svg {
-                width: 20px;
-                height: 20px;
-                transition: transform 0.3s ease;
+            .uc:hover {
+                background: var(--surface);
             }
-
-            .cta-button:hover svg {
-                transform: translateX(5px);
-            }
-
-            /* Scroll indicator */
-            .scroll-indicator {
-                position: absolute;
-                bottom: 40px;
-                left: 50%;
-                transform: translateX(-50%);
-                opacity: 0;
-                animation:
-                    fadeIn 1.2s ease forwards,
-                    bounce 2s ease-in-out infinite;
-                animation-delay: 1.5s, 1.5s;
-            }
-
-            .scroll-indicator::before {
-                content: "";
-                display: block;
-                width: 2px;
-                height: 40px;
-                background: linear-gradient(to bottom, transparent, #667eea);
-                margin: 0 auto 10px;
-            }
-
-            /* Tagline at bottom */
-            .tagline {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 12px;
-                letter-spacing: 3px;
+            .uc-tag {
+                font-size: 0.72rem;
+                font-weight: 500;
+                letter-spacing: 0.2em;
                 text-transform: uppercase;
-                color: #8b9dc3;
-                opacity: 0.6;
-                z-index: 10;
+                color: var(--indigo);
+                margin-bottom: 0.9rem;
+            }
+            .uc h3 {
+                font-family: "Urbanist", sans-serif;
+                font-size: 1.05rem;
+                font-weight: 700;
+                margin-bottom: 0.6rem;
+                line-height: 1.35;
+            }
+            .uc p {
+                font-size: 0.88rem;
+                color: var(--dim);
+                line-height: 1.85;
+                font-weight: 300;
             }
 
-            /* Animations */
-            @keyframes fadeInDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+            /* Arch stack */
+            .arch {
+                display: flex;
+                flex-direction: column;
+            }
+            .ar {
+                display: grid;
+                grid-template-columns: 120px 1fr 210px;
+                gap: 2rem;
+                align-items: center;
+                padding: 1.2rem 1.75rem;
+                border-bottom: 1px solid var(--border);
+                transition: all 0.3s;
+                border-left: 2px solid transparent;
+            }
+            .ar:first-child {
+                border-top: 1px solid var(--border);
+            }
+            .ar:hover {
+                background: var(--surface);
+                padding-left: 2.25rem;
+            }
+            .ar.now {
+                background: var(--surface-2);
+                border-left-color: var(--indigo);
+            }
+            .ar-l {
+                font-size: 0.6rem;
+                font-weight: 500;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+            .ar.now .ar-l {
+                color: var(--indigo);
+            }
+            .ar-d {
+                font-size: 0.88rem;
+                color: var(--dim);
+                font-weight: 300;
+            }
+            .ar.now .ar-d {
+                color: var(--text);
+            }
+            .ar-p {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+            }
+            .ar-p a {
+                font-size: 0.72rem;
+                color: var(--muted);
+                text-decoration: none;
+                padding: 0.25rem 0.55rem;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+                transition: all 0.2s;
+            }
+            .ar-p a:hover {
+                border-color: var(--indigo);
+                color: var(--indigo);
+            }
+            .ar.now .ar-p a {
+                border-color: rgba(102, 126, 234, 0.2);
+                color: var(--indigo);
             }
 
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+            /* CTA */
+            .cta-sc {
+                padding: 8rem 0;
+                border-top: 1px solid var(--border);
+                text-align: center;
+            }
+            .cta-in {
+                max-width: 560px;
+                margin: 0 auto;
+                padding: 0 2.5rem;
+            }
+            .cta-in h2 {
+                font-family: "Urbanist", sans-serif;
+                font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+                font-weight: 800;
+                letter-spacing: -0.03em;
+                margin-bottom: 1rem;
+                line-height: 1.15;
+            }
+            .cta-in h2 em {
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-weight: 400;
+                color: var(--indigo);
+            }
+            .cta-in p {
+                font-size: 0.92rem;
+                color: var(--dim);
+                font-weight: 300;
+                line-height: 1.9;
+                margin-bottom: 2rem;
+            }
+            .cta-in .btn {
+                margin: 0 0.3rem;
             }
 
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 0.6;
-                }
+            /* Footer */
+            footer {
+                padding: 3.5rem 0 1.5rem;
+                border-top: 1px solid var(--border);
+            }
+            .ft {
+                max-width: 960px;
+                margin: 0 auto;
+                padding: 0 2.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 3rem;
+            }
+            .ft-b .ft-n {
+                font-family: "Urbanist", sans-serif;
+                font-size: 0.92rem;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+            }
+            .ft-b .ft-n .a {
+                color: var(--indigo);
+            }
+            .ft-b p {
+                font-size: 0.82rem;
+                color: var(--dim);
+                font-weight: 300;
+                line-height: 1.8;
+                max-width: 260px;
+            }
+            .ft-cs {
+                display: flex;
+                gap: 3rem;
+            }
+            .ft-c h5 {
+                font-size: 0.62rem;
+                font-weight: 500;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 0.6rem;
+            }
+            .ft-c a {
+                display: block;
+                font-size: 0.78rem;
+                color: var(--dim);
+                text-decoration: none;
+                margin-bottom: 0.3rem;
+                font-weight: 300;
+                transition: color 0.2s;
+            }
+            .ft-c a:hover {
+                color: var(--indigo);
+            }
+            .ft-end {
+                max-width: 960px;
+                margin: 2rem auto 0;
+                padding: 1.25rem 2.5rem 0;
+                border-top: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.72rem;
+                color: var(--muted);
             }
 
-            @keyframes bounce {
-                0%,
-                100% {
-                    transform: translateX(-50%) translateY(0);
-                }
-                50% {
-                    transform: translateX(-50%) translateY(10px);
-                }
+            .rv {
+                opacity: 0;
+                transform: translateY(16px);
+                transition:
+                    opacity 0.75s ease,
+                    transform 0.75s ease;
+            }
+            .rv.vis {
+                opacity: 1;
+                transform: translateY(0);
             }
 
-            /* Responsive */
             @media (max-width: 768px) {
-                .logo {
-                    font-size: 14px;
-                    letter-spacing: 6px;
-                    margin-bottom: 40px;
+                .feat-row {
+                    grid-template-columns: 1fr;
                 }
-
-                .acronym {
-                    font-size: 14px;
-                    letter-spacing: 1px;
-                    margin-bottom: 40px;
-                    padding: 0 10px;
+                .uc-grid {
+                    grid-template-columns: 1fr;
                 }
-
-                .cta-button {
-                    padding: 16px 40px;
-                    font-size: 16px;
+                .ar {
+                    grid-template-columns: 1fr;
+                    gap: 0.3rem;
                 }
-
-                .tagline {
-                    font-size: 10px;
-                    letter-spacing: 2px;
+                .ar-p {
+                    justify-content: flex-start;
                 }
-            }
-
-            /* Loading spinner */
-            .loading {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                z-index: 100;
-                pointer-events: none;
-            }
-
-            .spinner {
-                width: 50px;
-                height: 50px;
-                border: 3px solid rgba(102, 126, 234, 0.2);
-                border-top-color: #667eea;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-            @keyframes spin {
-                to {
-                    transform: rotate(360deg);
+                .ft {
+                    flex-direction: column;
+                }
+                .ft-cs {
+                    gap: 2rem;
+                }
+                .hd-nav a:not(.hd-amp) {
+                    display: none;
                 }
             }
         </style>
     </head>
     <body>
-        <!-- Loading spinner -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-        </div>
-
-        <!-- Three.js canvas -->
-        <div id="canvas-container"></div>
-
-        <!-- Content overlay -->
-        <div class="content">
-            <div class="logo">GeoFleetic</div>
-
-            <h1>GeoFleetic</h1>
-            <div class="acronym">
-                <span>Geo</span>-distributed <span>Fleet</span><br />
-                <span>i</span>ntelligence
-                <span>c</span>ollaboration.<br /><br />
-                Vehicles and devices that learn routes,<br />
-                predict demand, and optimize logistics<br />
-                over time.
+        <div class="loader">
+            <div class="loader-inner">
+                <div class="loader-text">LOCATING</div>
+                <div class="loader-bar"></div>
             </div>
-
-            <a href="https://ampersandboxdesign.com" class="cta-button">
-                <span>Discover on [&]</span>
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                </svg>
-            </a>
-            <br />
-            <br />
-            <span class="copyright"
-                >© <span id="year"></span> GeoFleetic.com ...
-                <span class="powered-by"
-                    >Powered by
-                    <a href="https://ampersandboxdesign.com" target="_blank"
-                        >[&]</a
-                    ></span
-                ></span
-            >
-
-            <div class="scroll-indicator"></div>
         </div>
+        <canvas id="globe"></canvas>
 
-        <div class="tagline">Beyond Intelligence</div>
+        <div class="page">
+            <header>
+                <a href="/" class="logo"
+                    ><div class="logo-globe"></div>
+                    <div class="logo-name">GeoFleetic</div></a
+                >
+                <div class="hd-nav">
+                    <a href="#capabilities">Capabilities</a>
+                    <a href="#methods">Methods</a>
+                    <a href="#architecture">Stack</a>
+                    <a href="https://ampersandboxdesign.com" class="hd-amp"
+                        >[&] Portfolio</a
+                    >
+                </div>
+            </header>
 
-        <!-- Three.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+            <section class="hero">
+                <div class="hero-c">
+                    <p class="hero-eyebrow">Spatial Intelligence Layer</p>
+                    <h1 class="hero-title">
+                        <span class="w w1">Geo</span>
+                        <span class="w w2">Fleetic</span>
+                    </h1>
+                    <p class="hero-acro">
+                        <strong>Geo</strong>-distributed <strong>Fleet</strong>
+                        <strong>i</strong>ntelligence
+                        <strong>c</strong>ollaboration
+                    </p>
+                    <p class="hero-sub">
+                        Vehicles and devices that <strong>learn routes</strong>,
+                        predict demand, and
+                        <strong>optimize logistics</strong> over time.
+                    </p>
+                    <p class="hero-desc">
+                        The spatial intelligence layer for the [&] stack.
+                        Digital twin synchronization, federated fleet learning,
+                        and geo-distributed state that converges — not
+                        conflicts.
+                    </p>
+                    <div class="hero-btns">
+                        <a href="https://fleetprompt.com" class="btn btn-grad"
+                            >Discover on FleetPrompt</a
+                        >
+                        <a
+                            href="https://ampersandboxdesign.com"
+                            class="btn btn-ghost"
+                            >Back to [&]</a
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <div class="sects">
+                <section class="sc" id="capabilities">
+                    <div class="sc-in">
+                        <div class="sc-hd ctr rv">
+                            <div class="ovl">Capabilities</div>
+                            <h2>
+                                Three dimensions of
+                                <em>spatial intelligence</em>
+                            </h2>
+                            <p class="sub">
+                                GeoFleetic gives AI agents spatial awareness —
+                                not just GPS, but genuine understanding of
+                                routes, territories, and movement patterns that
+                                evolve.
+                            </p>
+                        </div>
+                        <div class="feat-row">
+                            <div class="feat rv">
+                                <div class="feat-num">01</div>
+                                <h3>Track</h3>
+                                <p>
+                                    Spatial digital twin technology for
+                                    real-time fleet state. Each vehicle
+                                    maintains a local digital twin synchronized
+                                    via delta-CRDTs — convergence under network
+                                    partitions without central coordination.
+                                    Tile38-inspired geofencing with continual
+                                    learning layered on top.
+                                </p>
+                                <span class="feat-tag"
+                                    >Spatial Digital Twins · Tile38</span
+                                >
+                            </div>
+                            <div class="feat rv">
+                                <div class="feat-num">02</div>
+                                <h3>Learn</h3>
+                                <p>
+                                    Federated fleet learning — each vehicle
+                                    trains local models on route data, then
+                                    shares only model deltas (not raw data).
+                                    Decentralised model exchange addresses
+                                    distribution shifts while preserving
+                                    privacy. Fleet knowledge compounds without
+                                    centralizing data.
+                                </p>
+                                <span class="feat-tag"
+                                    >Federated Learning · LoRA</span
+                                >
+                            </div>
+                            <div class="feat rv">
+                                <div class="feat-num">03</div>
+                                <h3>Optimize</h3>
+                                <p>
+                                    Graph neural network route optimization that
+                                    improves over time. Spatial-temporal
+                                    patterns learned continually — no
+                                    retraining. Paired with TickTickClock for
+                                    temporal context, creating a complete
+                                    when-and-where intelligence layer.
+                                </p>
+                                <span class="feat-tag"
+                                    >GNN · Continual Spatial</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sc" id="methods">
+                    <div class="sc-in">
+                        <div class="sc-hd rv">
+                            <div class="ovl">Methods & Protocols</div>
+                            <h2>Built on <em>real research</em></h2>
+                            <p class="sub">
+                                GeoFleetic implements methods from distributed
+                                systems research, spatial computing, and
+                                federated machine learning.
+                            </p>
+                        </div>
+                        <div class="uc-grid">
+                            <div class="uc rv">
+                                <div class="uc-tag">Synchronization</div>
+                                <h3>Epoch-Aware Delta-CRDTs</h3>
+                                <p>
+                                    Inspired by GeoCoCo (2025) — conflict-free
+                                    replicated data types with epoch isolation.
+                                    Merge functions satisfy ACI properties.
+                                    Network partitions affect only latency,
+                                    never correctness. Fleet state converges
+                                    deterministically after reconciliation.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Learning</div>
+                                <h3>Federated Continual Adaptation</h3>
+                                <p>
+                                    Decentralised model exchange inspired by
+                                    continual learning principles for federated
+                                    settings. Lightweight LoRA adapters shared
+                                    across fleet members enable rapid adaptation
+                                    to new routes without transmitting raw GPS
+                                    data or retraining base models.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Digital Twins</div>
+                                <h3>Spatial Digital Twin Framework</h3>
+                                <p>
+                                    IEEE COMST 2025 research demonstrates
+                                    digital twins enabling real-time
+                                    coordination among heterogeneous agents —
+                                    vehicles, roadside units, and traffic
+                                    control centers. GeoFleetic implements this
+                                    with edge-to-cloud data pipelines and
+                                    MCP-based tool connectivity.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Protocol</div>
+                                <h3>MCP + A2A Agent Protocol</h3>
+                                <p>
+                                    Every GeoFleetic endpoint is an MCP server.
+                                    Anthropic's MCP (agent-to-tool) and Google's
+                                    A2A (agent-to-agent) protocols let fleet
+                                    agents query spatial state, subscribe to
+                                    geofence events, and coordinate route
+                                    changes through standardized interfaces.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sc" id="architecture">
+                    <div class="sc-in">
+                        <div class="sc-hd rv">
+                            <div class="ovl">Architecture</div>
+                            <h2>One system, not <em>ten products</em></h2>
+                            <p class="sub">
+                                GeoFleetic is the Intelligence layer — spatial
+                                awareness where TickTickClock provides temporal.
+                                Together: where and when.
+                            </p>
+                        </div>
+                        <div class="arch">
+                            <div class="ar rv">
+                                <div class="ar-l">Interface</div>
+                                <div class="ar-d">
+                                    Agent specs and contracts
+                                </div>
+                                <div class="ar-p">
+                                    <a href="https://specprompt.com"
+                                        >SpecPrompt</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Creation</div>
+                                <div class="ar-d">Build and deploy agents</div>
+                                <div class="ar-p">
+                                    <a href="https://agentelic.com"
+                                        >Agentelic</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Orchestration</div>
+                                <div class="ar-d">Multi-agent coordination</div>
+                                <div class="ar-p">
+                                    <a href="https://delegatic.com">Delegatic</a
+                                    ><a href="https://agentromatic.com"
+                                        >AgenTroMatic</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Deliberation</div>
+                                <div class="ar-d">Structured consensus</div>
+                                <div class="ar-p">
+                                    <a href="https://deliberatic.com"
+                                        >Deliberatic</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Memory</div>
+                                <div class="ar-d">
+                                    Continual learning substrate
+                                </div>
+                                <div class="ar-p">
+                                    <a href="https://graphonomous.com"
+                                        >Graphonomous</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Distribution</div>
+                                <div class="ar-d">CL strategies as skills</div>
+                                <div class="ar-p">
+                                    <a href="https://fleetprompt.com"
+                                        >FleetPrompt</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar now rv">
+                                <div class="ar-l">Intelligence</div>
+                                <div class="ar-d">
+                                    Spatial + temporal awareness
+                                </div>
+                                <div class="ar-p">
+                                    <a href="/">GeoFleetic</a
+                                    ><a href="https://ticktickclock.com"
+                                        >TickTickClock</a
+                                    >
+                                </div>
+                            </div>
+                            <div class="ar rv">
+                                <div class="ar-l">Infrastructure</div>
+                                <div class="ar-d">Managed hosting</div>
+                                <div class="ar-p">
+                                    <a href="https://webhost.systems"
+                                        >WebHost Systems</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sc" id="applications">
+                    <div class="sc-in">
+                        <div class="sc-hd ctr rv">
+                            <div class="ovl">Applications</div>
+                            <h2>What spatial intelligence <em>unlocks</em></h2>
+                        </div>
+                        <div class="uc-grid">
+                            <div class="uc rv">
+                                <div class="uc-tag">Last-Mile Delivery</div>
+                                <h3>Routes that learn from every delivery</h3>
+                                <p>
+                                    Each driver's local model captures
+                                    neighborhood patterns — parking, building
+                                    access, customer timing. Federated sharing
+                                    means fleet-wide quality improves without
+                                    centralizing driver data.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Field Service</div>
+                                <h3>Scheduling meets spatial context</h3>
+                                <p>
+                                    Pair with TickTickClock for time-aware
+                                    dispatch. Technician routing that accounts
+                                    for skill proximity, traffic patterns, and
+                                    historical job duration at each location —
+                                    continually improving.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Autonomous Vehicles</div>
+                                <h3>Shared spatial memory across fleets</h3>
+                                <p>
+                                    Road conditions, construction zones, and
+                                    hazards synchronized via CRDTs across all
+                                    vehicles. Each observation improves the
+                                    shared spatial model. Edge-native decisions
+                                    with fleet-wide context.
+                                </p>
+                            </div>
+                            <div class="uc rv">
+                                <div class="uc-tag">Supply Chain</div>
+                                <h3>
+                                    Demand prediction with spatial granularity
+                                </h3>
+                                <p>
+                                    Warehouse-to-store spatial models that learn
+                                    regional demand. Seasonal shifts, local
+                                    events, and weather correlations in
+                                    Graphonomous-powered spatial knowledge
+                                    graphs that evolve without retraining.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="cta-sc">
+                    <div class="cta-in rv">
+                        <h2>Intelligence that knows <em>where</em></h2>
+                        <p>
+                            Part of the [&] Ampersand Box Design portfolio — the
+                            infrastructure that makes AI learn, adapt, and
+                            decide. Elixir/OTP. Edge-native. MCP-first.
+                        </p>
+                        <a
+                            href="https://github.com/AmpersandBoxDesign"
+                            class="btn btn-grad"
+                            >GitHub</a
+                        >
+                        <a
+                            href="https://ampersandboxdesign.com"
+                            class="btn btn-ghost"
+                            >Explore [&]</a
+                        >
+                    </div>
+                </section>
+
+                <footer>
+                    <div class="ft">
+                        <div class="ft-b">
+                            <div class="ft-n">
+                                [<span class="a">&</span>] Ampersand Box
+                            </div>
+                            <p>
+                                Building the infrastructure that makes AI agents
+                                learn, adapt, and decide.
+                            </p>
+                        </div>
+                        <div class="ft-cs">
+                            <div class="ft-c">
+                                <h5>Portfolio</h5>
+                                <a href="https://graphonomous.com"
+                                    >Graphonomous</a
+                                ><a href="https://deliberatic.com"
+                                    >Deliberatic</a
+                                ><a href="https://opensentience.org"
+                                    >OpenSentience</a
+                                ><a href="https://fleetprompt.com"
+                                    >FleetPrompt</a
+                                ><a href="https://delegatic.com">Delegatic</a
+                                ><a href="https://agentelic.com">Agentelic</a>
+                            </div>
+                            <div class="ft-c">
+                                <h5>Company</h5>
+                                <a href="https://ampersandboxdesign.com"
+                                    >[&] Home</a
+                                ><a href="https://traaviis.com">traaviis.com</a
+                                ><a href="https://c-u-l8er.link"
+                                    >c-u-l8er.link</a
+                                ><a href="https://github.com/c-u-l8er"
+                                    >GitHub</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ft-end">
+                        <p>&copy; <span id="yr"></span> geofleetic.com</p>
+                        <p>All systems located ◎</p>
+                    </div>
+                </footer>
+            </div>
+        </div>
 
         <script>
-            document.getElementById("year").textContent =
+            document.getElementById("yr").textContent =
                 new Date().getFullYear();
-
-            // Wait for DOM and Three.js to load
-            window.addEventListener("load", () => {
-                initScene();
-                document.getElementById("loading").style.display = "none";
+            const obs = new IntersectionObserver(
+                (es) => {
+                    es.forEach((e) => {
+                        if (e.isIntersecting) e.target.classList.add("vis");
+                    });
+                },
+                { threshold: 0.08, rootMargin: "0px 0px -30px 0px" },
+            );
+            document.querySelectorAll(".rv").forEach((el) => obs.observe(el));
+            document.querySelectorAll('a[href^="#"]').forEach((a) => {
+                a.addEventListener("click", (e) => {
+                    const h = a.getAttribute("href");
+                    if (!h || h === "#" || h.length < 2) return;
+                    const t = document.getElementById(h.slice(1));
+                    if (!t) return;
+                    e.preventDefault();
+                    t.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
             });
 
-            function initScene() {
-                const container = document.getElementById("canvas-container");
+            // ═══════════════════════════════════════════
+            // ROTATING WIREFRAME GLOBE with fleet nodes
+            // ═══════════════════════════════════════════
+            const cv = document.getElementById("globe"),
+                ctx = cv.getContext("2d");
+            let W, H, cxS, cyS;
+            let mx = 0,
+                my = 0;
+            document.addEventListener("mousemove", (e) => {
+                mx = (e.clientX / innerWidth) * 2 - 1;
+                my = -(e.clientY / innerHeight) * 2 + 1;
+            });
 
-                // Scene setup
-                const scene = new THREE.Scene();
-                scene.fog = new THREE.Fog(0x0a0a0f, 10, 100);
+            function resize() {
+                W = cv.width = innerWidth;
+                H = cv.height = innerHeight;
+                cxS = W / 2;
+                cyS = H / 2;
+            }
+            resize();
+            window.addEventListener("resize", resize);
 
-                // Camera
-                const camera = new THREE.PerspectiveCamera(
-                    60,
-                    window.innerWidth / window.innerHeight,
-                    0.1,
-                    1000,
-                );
-                camera.position.z = 18;
+            const GLOBE_R = Math.min(innerWidth, innerHeight) * 0.32;
+            const NODE_COUNT = 220;
+            const MERIDIANS = 12;
+            const PARALLELS = 8;
 
-                // Renderer
-                const renderer = new THREE.WebGLRenderer({
-                    antialias: true,
-                    alpha: true,
-                });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-                renderer.setClearColor(0x0a0a0f, 1);
-                container.appendChild(renderer.domElement);
-
-                // Create brain-like graph network
-                const graphGroup = new THREE.Group();
-
-                // Node and connection parameters
-                const nodeCount = 300;
-                const nodes = [];
-                const connections = [];
-
-                // Create nodes in a brain-like shape
-                const nodeGeometry = new THREE.SphereGeometry(0.08, 8, 8);
-                const nodeMaterial = new THREE.MeshBasicMaterial({
-                    color: 0x667eea,
-                    transparent: true,
-                    opacity: 0.8,
-                });
-
-                // Generate nodes in ellipsoid (brain-like) formation
-                for (let i = 0; i < nodeCount; i++) {
-                    const theta = Math.random() * Math.PI * 2;
-                    const phi = Math.acos(Math.random() * 2 - 1);
-
-                    // Ellipsoid shape (brain-like) - LARGER
-                    const x = 12 * Math.sin(phi) * Math.cos(theta);
-                    const y = 9 * Math.sin(phi) * Math.sin(theta);
-                    const z = 10 * Math.cos(phi);
-
-                    const node = new THREE.Mesh(
-                        nodeGeometry,
-                        nodeMaterial.clone(),
-                    );
-                    node.position.set(x, y, z);
-
-                    // Random pulsing animation offset
-                    node.userData.pulseOffset = Math.random() * Math.PI * 2;
-                    node.userData.pulseSpeed = 0.5 + Math.random() * 0.5;
-
-                    nodes.push(node);
-                    graphGroup.add(node);
-                }
-
-                // Create connections between nearby nodes
-                const lineMaterial = new THREE.LineBasicMaterial({
-                    color: 0x764ba2,
-                    transparent: true,
-                    opacity: 0.15,
-                });
-
-                for (let i = 0; i < nodes.length; i++) {
-                    // Connect to 3-5 nearest neighbors
-                    const connectionCount = 3 + Math.floor(Math.random() * 3);
-                    const distances = nodes.map((node, idx) => ({
-                        idx,
-                        dist: nodes[i].position.distanceTo(node.position),
-                    }));
-
-                    distances.sort((a, b) => a.dist - b.dist);
-
-                    for (
-                        let j = 1;
-                        j < Math.min(connectionCount, distances.length);
-                        j++
-                    ) {
-                        const targetNode = nodes[distances[j].idx];
-
-                        const points = [nodes[i].position, targetNode.position];
-
-                        const geometry =
-                            new THREE.BufferGeometry().setFromPoints(points);
-                        const line = new THREE.Line(
-                            geometry,
-                            lineMaterial.clone(),
-                        );
-
-                        line.userData.pulseOffset = Math.random() * Math.PI * 2;
-
-                        connections.push(line);
-                        graphGroup.add(line);
-                    }
-                }
-
-                scene.add(graphGroup);
-
-                // Ambient particles
-                const particleCount = 200;
-                const particleGeometry = new THREE.BufferGeometry();
-                const particlePositions = new Float32Array(particleCount * 3);
-
-                for (let i = 0; i < particleCount * 3; i += 3) {
-                    particlePositions[i] = (Math.random() - 0.5) * 60;
-                    particlePositions[i + 1] = (Math.random() - 0.5) * 60;
-                    particlePositions[i + 2] = (Math.random() - 0.5) * 60;
-                }
-
-                particleGeometry.setAttribute(
-                    "position",
-                    new THREE.BufferAttribute(particlePositions, 3),
-                );
-
-                const particleMaterial = new THREE.PointsMaterial({
-                    color: 0x667eea,
-                    size: 0.05,
-                    transparent: true,
-                    opacity: 0.3,
-                });
-
-                const particles = new THREE.Points(
-                    particleGeometry,
-                    particleMaterial,
-                );
-                scene.add(particles);
-
-                // Mouse interaction
-                let mouseX = 0;
-                let mouseY = 0;
-                let targetRotationX = 0;
-                let targetRotationY = 0;
-
-                document.addEventListener("mousemove", (event) => {
-                    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                    mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-                });
-
-                // Animation loop
-                let time = 0;
-                function animate() {
-                    requestAnimationFrame(animate);
-
-                    time += 0.01;
-
-                    // Rotate brain graph slowly (base rotation)
-                    graphGroup.rotation.y += 0.002;
-
-                    // Mouse-based rotation (more pronounced, including vertical)
-                    targetRotationX = mouseY * 0.6; // Up/down mouse movement
-                    targetRotationY = mouseX * 0.5; // Left/right mouse movement
-
-                    // Smooth interpolation
-                    graphGroup.rotation.x +=
-                        (targetRotationX - graphGroup.rotation.x) * 0.08;
-                    graphGroup.rotation.y +=
-                        (targetRotationY - graphGroup.rotation.y) * 0.08;
-
-                    // Animate node pulsing
-                    nodes.forEach((node, idx) => {
-                        const pulse = Math.sin(
-                            time * node.userData.pulseSpeed +
-                                node.userData.pulseOffset,
-                        );
-                        node.material.opacity = 0.6 + pulse * 0.2;
-                        node.scale.setScalar(1 + pulse * 0.2);
-
-                        // Occasional bright flash
-                        if (Math.random() > 0.998) {
-                            node.material.opacity = 1;
-                            node.material.color.setHex(0xf093fb);
-                            setTimeout(() => {
-                                node.material.color.setHex(0x667eea);
-                            }, 200);
-                        }
-                    });
-
-                    // Animate connection pulsing
-                    connections.forEach((line) => {
-                        const pulse = Math.sin(
-                            time * 0.8 + line.userData.pulseOffset,
-                        );
-                        line.material.opacity = 0.1 + pulse * 0.08;
-                    });
-
-                    // Rotate particles
-                    particles.rotation.y += 0.0005;
-                    particles.rotation.x += 0.0003;
-
-                    renderer.render(scene, camera);
-                }
-
-                animate();
-
-                // Handle window resize
-                window.addEventListener("resize", () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(window.innerWidth, window.innerHeight);
+            // Globe nodes — distributed on sphere surface
+            const gNodes = [];
+            for (let i = 0; i < NODE_COUNT; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(Math.random() * 2 - 1);
+                gNodes.push({
+                    theta,
+                    phi,
+                    // Slight radius variation
+                    rOff: 0.95 + Math.random() * 0.1,
+                    size: 1 + Math.random() * 2.5,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpd: 0.3 + Math.random() * 0.5,
+                    flash: 0,
+                    // Connection indices (nearest neighbors)
+                    conns: [],
                 });
             }
+
+            // Pre-compute connections (5 nearest per node on sphere surface)
+            function sphereDist(a, b) {
+                const ax = Math.sin(a.phi) * Math.cos(a.theta),
+                    ay = Math.sin(a.phi) * Math.sin(a.theta),
+                    az = Math.cos(a.phi);
+                const bx = Math.sin(b.phi) * Math.cos(b.theta),
+                    by = Math.sin(b.phi) * Math.sin(b.theta),
+                    bz = Math.cos(b.phi);
+                return Math.sqrt(
+                    (ax - bx) ** 2 + (ay - by) ** 2 + (az - bz) ** 2,
+                );
+            }
+            gNodes.forEach((n, i) => {
+                const dists = gNodes
+                    .map((o, j) => ({ j, d: sphereDist(n, o) }))
+                    .filter((x) => x.j !== i)
+                    .sort((a, b) => a.d - b.d);
+                for (let k = 0; k < Math.min(4, dists.length); k++)
+                    n.conns.push(dists[k].j);
+            });
+
+            // Ambient particles
+            const ambientP = [];
+            for (let i = 0; i < 60; i++) {
+                ambientP.push({
+                    x: Math.random() * 2 - 1,
+                    y: Math.random() * 2 - 1,
+                    z: Math.random() * 2 - 1,
+                    vx: (Math.random() - 0.5) * 0.0003,
+                    vy: (Math.random() - 0.5) * 0.0003,
+                    size: 0.5 + Math.random() * 1,
+                    alpha: 0.05 + Math.random() * 0.12,
+                });
+            }
+
+            // Project 3D → 2D with perspective
+            function project(x, y, z, rotY, rotX) {
+                // Rotate Y
+                let x1 = x * Math.cos(rotY) - z * Math.sin(rotY);
+                let z1 = x * Math.sin(rotY) + z * Math.cos(rotY);
+                // Rotate X
+                let y1 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
+                let z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX);
+                const denom = 400 + z2;
+                const scale = denom > 40 ? 400 / denom : 10;
+                return {
+                    x: cxS + x1 * scale,
+                    y: cyS - y1 * scale,
+                    z: z2,
+                    scale,
+                };
+            }
+
+            let time = 0;
+            let baseRotY = 0;
+            let targetRotX = 0,
+                targetRotY = 0,
+                curRotX = 0,
+                curRotY = 0;
+
+            function render() {
+                time += 0.01;
+                ctx.fillStyle = "rgba(7,7,14,0.15)";
+                ctx.fillRect(0, 0, W, H);
+
+                baseRotY += 0.003;
+                targetRotX = my * 0.4;
+                targetRotY = mx * 0.5 + baseRotY;
+                curRotX += (targetRotX - curRotX) * 0.05;
+                curRotY += (targetRotY - curRotY) * 0.05;
+
+                const R = Math.min(W, H) * 0.32;
+
+                // Draw meridians (longitude lines)
+                for (let m = 0; m < MERIDIANS; m++) {
+                    const mAngle = (m / MERIDIANS) * Math.PI;
+                    ctx.beginPath();
+                    let started = false;
+                    for (let p = 0; p <= 60; p++) {
+                        const phi = (p / 60) * Math.PI;
+                        const x = R * Math.sin(phi) * Math.cos(mAngle);
+                        const y = R * Math.cos(phi);
+                        const z = R * Math.sin(phi) * Math.sin(mAngle);
+                        const pr = project(x, y, z, curRotY, curRotX);
+                        const alpha = Math.max(0, (pr.z + R) / (2 * R)) * 0.08;
+                        if (!started) {
+                            ctx.moveTo(pr.x, pr.y);
+                            started = true;
+                        } else ctx.lineTo(pr.x, pr.y);
+                    }
+                    ctx.strokeStyle = "rgba(102,126,234,0.06)";
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+
+                // Draw parallels (latitude lines)
+                for (let p = 1; p < PARALLELS; p++) {
+                    const phi = (p / PARALLELS) * Math.PI;
+                    ctx.beginPath();
+                    let started = false;
+                    for (let m = 0; m <= 60; m++) {
+                        const theta = (m / 60) * Math.PI * 2;
+                        const x = R * Math.sin(phi) * Math.cos(theta);
+                        const y = R * Math.cos(phi);
+                        const z = R * Math.sin(phi) * Math.sin(theta);
+                        const pr = project(x, y, z, curRotY, curRotX);
+                        if (!started) {
+                            ctx.moveTo(pr.x, pr.y);
+                            started = true;
+                        } else ctx.lineTo(pr.x, pr.y);
+                    }
+                    ctx.strokeStyle = "rgba(102,126,234,0.05)";
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+
+                // Project all nodes
+                const projected = gNodes.map((n, i) => {
+                    const r = R * n.rOff;
+                    const x = r * Math.sin(n.phi) * Math.cos(n.theta);
+                    const y = r * Math.cos(n.phi);
+                    const z = r * Math.sin(n.phi) * Math.sin(n.theta);
+                    const pr = project(x, y, z, curRotY, curRotX);
+                    return { ...pr, idx: i, node: n };
+                });
+
+                // Sort by z for depth ordering
+                projected.sort((a, b) => a.z - b.z);
+
+                // Draw connections (behind nodes)
+                projected.forEach((p) => {
+                    const n = p.node;
+                    n.conns.forEach((ci) => {
+                        const other = projected.find((pp) => pp.idx === ci);
+                        if (!other || other.z < p.z) return; // Draw each connection once
+                        const depthA = Math.max(0, (p.z + R) / (2 * R));
+                        const depthB = Math.max(0, (other.z + R) / (2 * R));
+                        const alpha = Math.min(depthA, depthB) * 0.12;
+                        if (alpha < 0.01) return;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.strokeStyle = `rgba(102,126,234,${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+
+                        // Traveling pulse
+                        if (alpha > 0.05) {
+                            const spd = 0.03 + n.pulseSpd * 0.02;
+                            const pos = (time * spd + p.idx * 0.1) % 1;
+                            const px = p.x + (other.x - p.x) * pos;
+                            const py = p.y + (other.y - p.y) * pos;
+                            ctx.beginPath();
+                            ctx.arc(px, py, 1, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(118,75,162,${alpha * 1.5})`;
+                            ctx.fill();
+                        }
+                    });
+                });
+
+                // Draw nodes
+                projected.forEach((p) => {
+                    const n = p.node;
+                    const depth = Math.max(0, (p.z + R) / (2 * R));
+                    const pulse = Math.sin(time * n.pulseSpd + n.pulse);
+                    const baseAlpha = depth * (0.3 + pulse * 0.15);
+
+                    // Random flash
+                    if (Math.random() > 0.9985) {
+                        n.flash = 1;
+                    }
+                    n.flash *= 0.92;
+
+                    const alpha = Math.min(1, baseAlpha + n.flash * 0.7);
+                    const rawSize =
+                        n.size * p.scale * (0.8 + pulse * 0.2) + n.flash * 3;
+                    const size = Number.isFinite(rawSize)
+                        ? Math.max(0.5, rawSize)
+                        : 0.5;
+                    const glowRadius = Math.max(0.5, size * 4);
+
+                    if (alpha < 0.02) return;
+
+                    // Glow on flash
+                    if (n.flash > 0.3) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(240,147,251,${n.flash * 0.15})`;
+                        ctx.fill();
+                    }
+
+                    // Node
+                    const r = Math.floor(102 + n.flash * 138);
+                    const g = Math.floor(126 - n.flash * 51);
+                    const b = Math.floor(234 - n.flash * 0);
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+                    ctx.fill();
+                });
+
+                // Ambient particles (outside globe)
+                ambientP.forEach((p) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (Math.abs(p.x) > 1.5) {
+                        p.x *= -0.9;
+                    }
+                    if (Math.abs(p.y) > 1.5) {
+                        p.y *= -0.9;
+                    }
+                    const sx = cxS + p.x * W * 0.45;
+                    const sy = cyS - p.y * H * 0.45;
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(102,126,234,${p.alpha})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(render);
+            }
+
+            setTimeout(() => {
+                requestAnimationFrame(render);
+            }, 600);
         </script>
     </body>
 </html>
