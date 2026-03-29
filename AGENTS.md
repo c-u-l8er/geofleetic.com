@@ -29,4 +29,4 @@ GeoFleetic is the spatial intelligence layer for the [&] Protocol ecosystem. It 
 
 ## Status
 
-Spec complete. Implementation pending. See `project_spec/README.md`.
+Spec complete. Implementation pending. See `docs/spec/README.md`.

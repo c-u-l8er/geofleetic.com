@@ -4,7 +4,7 @@ Geo-distributed fleet intelligence collaboration. The `&space` primitive provide
 
 ## Source-of-truth spec
 
-- `project_spec/README.md` — GeoFleetic technical specification
+- `docs/spec/README.md` — GeoFleetic technical specification
 
 ## [&] Capabilities provided
 
