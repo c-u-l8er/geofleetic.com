@@ -589,6 +589,52 @@ Managed GeoFleetic instances:
 
 ---
 
+## 10.1 PULSE Loop Manifest
+
+GeoFleetic is a **PULSE-conforming loop** under OS-010 and pairs with TickTickClock as the **spatial complement** in the spatiotemporal pair (when + where). It is the **canonical PULSE substrate for spatial state** — other loops needing geofencing or route context reference `geofleetic://workspace/{ws_id}` (declared via the `transport` slot when used as a runtime, or via a custom substrate extension).
+
+**Loop ID:** `geofleetic.spatial_intelligence`
+**Loop name:** GeoFleetic Spatial Intelligence Loop
+**Version:** 0.1.0
+**Owner:** geofleetic.com
+**Workspace scope:** required
+
+**Phases (5 canonical kinds):**
+
+| Phase ID | Kind | Description |
+|---|---|---|
+| `retrieve_twin` | `retrieve` | Pull spatial digital twin state for the requested fleet/region (epoch-aware CRDT read) |
+| `route_inference` | `route` | Choose between fast geofence containment, GNN route optimization, or federated learning step |
+| `act_dispatch` | `act` | Emit routes / geofence verdicts; commit CRDT delta to twin state |
+| `learn_outcome` | `learn` | Update GNN adapters from delivery outcomes via federated LoRA (no raw data sharing) |
+| `consolidate_twin` | `consolidate` | Merge CRDT replicas across edge nodes; prune stale fence states |
+
+**Closure:** `consolidate_twin → retrieve_twin` via delta-CRDT, guarantee `next_tick`.
+
+**Cadence:** Primary `streaming` (continuous fleet position updates). Fallback `event`.
+
+**Nesting:**
+- Inner loop: `ticktickclock.temporal_intelligence` for spatiotemporal incident detection (`fire_forget` wait)
+
+**Substrates:**
+- `memory`: `graphonomous://workspace/{ws_id}` (federated semantic memory)
+- `policy`: `delegatic://workspace/{ws_id}` (geofence enforcement policies)
+- `audit`: `delegatic://workspace/{ws_id}/audit`
+- `auth`: `open_sentience://workspace/{ws_id}`
+- `transport`: `mcp` + `a2a`
+- `time`: `ticktickclock://workspace/{ws_id}` (canonical time substrate)
+
+**Invariants enabled:** `phase_atomicity`, `feedback_immutability`, `append_only_audit`, `outcome_grounding`, `trace_id_propagation`. `kappa_routing` is not used (routing is geometric, not topological); `quorum_before_commit` is replaced by CRDT convergence semantics.
+
+**Cross-loop connections:**
+- `incident_to_attention` — emits `OutcomeSignal` (geofence breach, route deviation) from `act_dispatch` to attention engines
+- `outcome_to_prism` — emits `OutcomeSignal` from `learn_outcome` to `prism.benchmark.observe`
+- `spatiotemporal_pair` — bidirectional with `ticktickclock.temporal_intelligence` via `TopologyContext` envelope
+
+**Why this matters:** GeoFleetic and TickTickClock together demonstrate **PULSE loop pairing** — two loops with different cadences (streaming spatial vs streaming temporal) that compose into a higher-order spatiotemporal loop. PULSE's `nesting` block declares this pairing without requiring either side to know the other's internal phase structure.
+
+---
+
 ## 11. Project Structure
 
 ```
